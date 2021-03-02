@@ -141,7 +141,7 @@ linestyle = ':'; % dotted
 line(get(axh,'XLim'), [0 0], 'Color', color, 'LineStyle', linestyle);
 line([0 0], get(axh,'YLim'), 'Color', color, 'LineStyle', linestyle);
 
-%% prob 2 c
+%% prob 2 c - hyperbola
 mu = 0.5;
 r0 = [-1;-2;0];
 v0 = [0.65;0.65;0];
