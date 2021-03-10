@@ -1,6 +1,5 @@
 function zdot = rhs_polar(t,z,p)
 r = z(1);
-theta = z(2);
 rdot = z(3);
 thetadot = z(4);
 
