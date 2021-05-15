@@ -20,7 +20,7 @@ Az(2) = 100000;
 [L1,L2,L3] = getLpoints(mu);
 
 % which Lagrange pt?
-L = L1;
+L = L2;
 
 X0 = zeros(length(Az),6);
 for i=1:length(Az)
@@ -36,9 +36,9 @@ for i=1:length(Az)
 end
 %% continuation!
 % loop over this
-for k=1:10
-    [X0(2+k,:),t_half(2+k)] = continuation(X0(k,:),X0(k+1,:),mu);
-end
+% for k=1:10
+%     [X0(2+k,:),t_half(2+k)] = continuation(X0(k,:),X0(k+1,:),mu);
+% end
 %% plot halo orbits
 figure;
 for j=1:size(X0,1)
@@ -57,5 +57,41 @@ plot3(1-mu,0,0,'bo','LineWidth',2); % Earth
 plot3(L1,0,0,'kx','LineWidth',2); % L1
 plot3(L2,0,0,'ko','LineWidth',2); % L2
 xlabel('X'); ylabel('Y'); zlabel('Z');
-
 % looks like it rotates about lagrange point from y-z projection
+%% find monodromy matrix of last orbit
+ic = [ic, reshape(eye(6),6^2,1)'];
+[T,X] = ode45(@EOM_3body_var, tspan, ic, opts2, p);
+for i=1:length(T)
+    Phi(:,:,i) = reshape(X(i,7:end), 6, 6);
+end
+Phif = Phi(:,:,end);
+[V,D]=eig(Phif); % D is eigenvalues, V is eigenvectors (columns)
+Y_u = V(:,1); %unstable
+Y_s = V(:,2); %stable
+
+%% find stable manifold
+extFlag = 0; % remove stable flag, replace with eig vector
+ic_t = X(:,1:6); % would need to save off more trajectories; or re-solve from one of the ICs (X0)
+[state_t,C_man] = findManifold(ic_t,extFlag,p,Y_s');
+
+figure; 
+plot3(X(:,1),X(:,2),X(:,3),'*');
+hold on; grid on;
+for i=1:2:100 %50 to 100 for only inward
+   plot3(state_t(1,1,i),state_t(1,2,i),state_t(1,3,i),'ro');
+   plot3(state_t(:,1,i),state_t(:,2,i),state_t(:,3,i),'g');  % green for stable
+end
+plot3(L1,0,0,'kx','LineWidth',2); % L1
+plot3(L2,0,0,'ko','LineWidth',2); % L2
+xlabel('X'); ylabel('Y'); zlabel('Z');
+plot3(1-mu,0,0,'bo','LineWidth',2); % Earth
+%plot3(-mu,0,0,'yo','LineWidth',2); % Sun
+
+%% interception with parking orbit
+rEarth = 6378.1; %km
+pOrbit.mu = 3.986004418*10^5/rEarth^3;% / au^3; %1/s^2, non-dim wrt au
+pOrbit.r0 = [35000,0,0]/rEarth;%/au; %1000 is good
+v = sqrt(pOrbit.mu/norm(pOrbit.r0));
+pOrbit.v0 = [0,v,0];%/au; %1/sec
+[parkingOrbX,parkingOrbY,parkingOrbZ] = closestPoint(pOrbit,state_t,au,rEarth);
+plot3(parkingOrbX,parkingOrbY,parkingOrbZ,'yo');
