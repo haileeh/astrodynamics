@@ -14,14 +14,23 @@ x = X(:,1)/au + 1; y = X(:,2)/au; z = X(:,3)/au; %add 1 au
 %figure; plot3(x,y,z)
 % find shortest distance compared to manifold time histories
 diffSmall = 1e6;
+% for i=1:size(manifolds,3)
+%     xM = manifolds(:,1,i); yM = manifolds(:,2,i); zM = manifolds(:,3,i);
+%     for j=1:length(x)
+%         for k=1:length(xM)
+%             diff = norm([x(j)-xM(k);y(j)-yM(k);z(j)-zM(k)]);
+%             if diff < diffSmall
+%                 diffSmall = diff;
+%             end
+%         end
+%     end
+% end
 for i=1:size(manifolds,3)
     xM = manifolds(:,1,i); yM = manifolds(:,2,i); zM = manifolds(:,3,i);
-    for j=1:length(x)
-        for k=1:length(xM)
-            diff = norm([x(j)-xM(k);y(j)-yM(k);z(j)-zM(k)]);
-            if diff < diffSmall
-                diffSmall = diff;
-            end
+    for k=1:length(xM)
+        diff = norm([1-xM(k);yM(k);zM(k)]);
+        if diff < diffSmall
+            diffSmall = diff;
         end
     end
 end

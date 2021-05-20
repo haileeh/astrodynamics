@@ -5,7 +5,7 @@ function [X0_new,t_half_new] = continuation(X0_1,X0_2,mu)
 % set fixed state (x or z) as the more rapidly changing of the 2
 
 % constant
-eps = -0.001;% TODO how to bound this
+eps = -0.001;% TODO bound this
 x01 = X0_1(1); x02 = X0_2(1);
 z01 = X0_1(3); z02 = X0_2(3);
 ydot01 = X0_1(5); ydot02 = X0_2(5);
@@ -21,4 +21,4 @@ else % z is fixed state
 end
 
 % call differential corrector
-[X0_new,t_half_new]=differentialControl_zFixed(mu,X0_new,3); % replace initial time guess (or don't use this as input)
+[X0_new,t_half_new]=differentialControl_zFixed(mu,X0_new,3);

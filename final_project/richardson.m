@@ -1,17 +1,14 @@
 function X0 = richardson(mu,Az,n,au,L1)
 
-% richardson's analytical solution - he is going off of L1
+% Richardson's third-order analytical solution 
 
 % constants
-n_13 = 1; % bifurcation ; values are 1 or 3
+n_13 = 1; % bifurcation; values are 1 or 3
 
-% could be more precise below
-%rL = 1.497610042*10^6; %rE in richardson %km % distance of secondary body from the Lagrange point (1)
-%rL = au-L1*au; % how does this change for L2?
-rL = au*abs(1-L1);
-%rL = au-L1*au;
+% distance of secondary body from the Lagrange point
+rL = au*abs(1-L1); %km 
 
-Az = Az/rL;
+Az = Az/rL; % normalize with respect to rL
 gammaL = rL /au;
 
 % richardson 1980 analytic construction paper,eqn 8a
@@ -58,7 +55,6 @@ a2 = 3/2*c3*(a24-2*a22) + 9/8*c4;
 l1 = a1+2*lambda^2*s1;
 l2 = a2+2*lambda^2*s2;
 Delta = lambda^2-c2; % nomalized units
-%Delta_unNorm = Delta * au^2;
 %Azt = sqrt((-Delta - l1*(Ax_min*rL).^2)./l2);
 
 if L1<1 %L1
@@ -67,17 +63,17 @@ if L1<1 %L1
 else %L2
     Ax_min = sqrt(abs(Delta/l1));
     Ax = -Ax_min;
-    Ay = 0;%k*Ax;
+    Ay = k*Ax;
 end
 
 omega = 1 + s1*Ax^2 + s2*Az^2; % of the correct order O(A_x^n)
 % solve
-t = 0; % don't use syms
+t = 0; 
 s = n*t;
 phi = 0; %determines the family of orbits
 psi = phi + n_13*pi/2; 
 tau = omega*s;
-tau1 = lambda*tau + phi; %n=[rad/s], t =s, omega = [km^2]?
+tau1 = lambda*tau + phi; %n=[rad/s], t =s, omega = [km^2]
 
 x = a21*Ax^2 + a22*Az^2 - Ax*cos(tau1) + (a23*Ax^2 - a24*Ax^2)*cos(2*tau1) + ...
     (a31*Ax^3 - a32*Ax*Az^2)*cos(3*tau1);
@@ -85,20 +81,13 @@ y = k*Ax*sin(tau1) + (b21*Ax^2-b22*Az^2)*sin(2*tau1)+ (b31*Ax^3-b32*Ax*Az^2)*sin
 deln = 2 - n_13;
 z = deln*(Az*cos(tau1) + d21*Ax*Az*(cos(2*tau1) - 3) + (d32*Az*Ax^2 -d31*Az^3)*cos(3*tau1));
 
-% initial conditions for a halo orbit in an L1 centered coordinate frame
+% initial conditions for a halo orbit in an Lagrange point centered coordinate frame
 % normalized by the Lagrange point secondary distance (rL)
-% tstar = vpasolve(y,t);
-% x0 = subs(x,t,tstar);
-% y0 = subs(y,t,tstar);
-% z0 = subs(z,t,tstar); 
 ydot0 = k*Ax*(lambda*cos(tau1)) + (b21*Ax^2 - b22*Az^2)*(2*lambda*cos(2*tau1)) + ...
     (b31*Ax^3 - b32*Ax*Az^2)*(3*lambda*cos(3*tau1));
-% ydot0 = subs(ydot0,t,tstar); 
 
 % The coordinates are with respect to the Lagrange point as origin. 
 % rL is the distance between the secondary body and the Lagrange point. The
 % conversion below is converting it from ND to km.
-rE = au-L1*au; %good
+rE = au-L1*au; 
 X0 = [x*rE 0 z*rE 0 ydot0*n*rE 0];
-
-%T = 2*pi/(lambda*omega); % normalized units

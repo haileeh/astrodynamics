@@ -9,12 +9,11 @@ function [X0,t_half]=differentialControl_zFixed(mu,X0,t_half)
 
 % Yields initial conditions and t_half (or just t)
 % example that works
-% mu = 0.04; X0 = [1.14 0 0.28 0 -0.316028 0]; t_half = 3;
 
-p.mu = mu;%0.04; %mu; %3.986004418*10^5; %[km^3 s^-2]
+p.mu = mu;
 it = 0;
 tol = 1e-8;
-tf = t_half;%1.433655;
+tf = t_half;
 while 1
     tspan = linspace(0,tf,2000);
     Phi0 = eye(6);
@@ -41,11 +40,6 @@ while 1
         % continue
         Phi = reshape(X(end, 7:end), 6, 6);
         Xdot = EOM_3body_var(0,X(end,:)',p);           
-%          % Howell 1984 paper - equivalent to Sanchez
-%          rhsMat = [Phi(4,1), Phi(4,5); Phi(6,1), Phi(6,5)] - (1/Xdot(2))*[Xdot(4); Xdot(6)]*[Phi(2,1), Phi(2,5)];
-%          delta = rhsMat\[del_x1(4);del_x1(6)];
-%          X0(1) = X0(1) + delta(1);
-%          X0(5) = X0(5) + delta(2);
 
         % Sanchez
         rhsMat = [Phi(2,1), Phi(2,5) Xdot(2); Phi(4,1), Phi(4,5), Xdot(4);...
@@ -56,6 +50,6 @@ while 1
         deltaState = rhsMat\[0; del_x1(4); del_x1(6)];
         X0(1) = X0(1) + deltaState(1); %x0
         X0(5) = X0(5) + deltaState(2); %ydot0
-        tf = tf+deltaState(3); % don't need to do this because of y_cross events
+        tf = tf+deltaState(3);
     end
 end

@@ -8,15 +8,16 @@ R_E = 6378; %km
 J2 = 1.08263*10^-3; %second zonal term
 alt = 3300; %km
 a = alt + R_E; %km
-inc = acosd(-2*rho*a^(7/2)/(3*J2*R_E^2*sqrt(mu)));
-%%  part 2 how does eccentricity change affect argument of perigee
 e = 0;
-dwdt = -(1.5 * (sqrt(mu)*J2*R_E^2/( (1-e^2)^2*a^(7/2)) ) ) * (5/2*sind(inc)^2 - 2); % rad/sec
+inc1 = acosd(-2*rho*a^(7/2)*(1-e^2)^2/(3*J2*R_E^2*sqrt(mu)));
+%%  part 2 how does eccentricity change affect argument of perigee
+dwdt = -(1.5 * (sqrt(mu)*J2*R_E^2/( (1-e^2)^2*a^(7/2)) ) ) * (5/2*sind(inc1)^2 - 2); % rad/sec
 dwdt1 = dwdt * 180/pi * (24*60*60) % deg/day
 
 % now, eccenctiricty e = 0.25, how does this change argument of perigee?
 e = 0.25;
-dwdt = -(1.5 * (sqrt(mu)*J2*R_E^2/( (1-e^2)^2*a^(7/2)) ) ) * (5/2*sind(inc)^2 - 2); % rad/sec
+inc2 = acosd(-2*rho*a^(7/2)*(1-e^2)^2/(3*J2*R_E^2*sqrt(mu)))
+dwdt = -(1.5 * (sqrt(mu)*J2*R_E^2/( (1-e^2)^2*a^(7/2)) ) ) * (5/2*sind(inc2)^2 - 2); % rad/sec
 dwdt2 = dwdt * 180/pi * (24*60*60) % deg/day
 
 % plot argument of perigee, assuming everything else fixed
@@ -30,7 +31,8 @@ w2 = dwdt2*tspan; % deg
 
 figure;
 plot(tspan, w1, 'r', 'LineWidth',2);
-hold on;
+hold on; grid on;
 plot(tspan, w2, '--g', 'LineWidth',2);
 xlabel('Time [days]');
 ylabel('\omega [deg]');
+xlim([0 tspan(end)]);
