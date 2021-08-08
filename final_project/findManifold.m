@@ -1,4 +1,4 @@
-function [state_t,C] = findManifold(ic_t,p,Y_s,eigD)
+function [state_t,C,tMan] = findManifold(ic_t,p,Y_s,eigD)
 % ic_t of size n x 6
 n = length(ic_t);
 
@@ -20,9 +20,10 @@ else
     tspan = linspace(0,tf,1000);
 end
 state_t = zeros(1000,6,100);
+tMan = zeros(1000,100);
 for i=1:n
    ic = ic_t(i,:) + eps*Y_s;
-   [~,state_t(:,:,i)] = ode45(@EOM_3body, tspan, ic, opts, p);
+   [tMan(:,i),state_t(:,:,i)] = ode45(@EOM_3body, tspan, ic, opts, p);
 end
 C = zeros(n,1);
 for k=1:n

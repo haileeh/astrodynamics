@@ -1,4 +1,4 @@
-plotFlag = 1;
+plotFlag = 0;
 unstableFlag = 0;
 % Define constants
 mEarth = 5.9722*10^24; %[kg]
@@ -32,7 +32,7 @@ for i=1:length(Az)
     [X0(i,:),t_half(i)]=differentialControl_zFixed(mu,x_3a',3); % TODO initial time
 end
 %% continuation!
-for k=1:10
+for k=1:5
     [X0(2+k,:),t_half(2+k)] = continuation(X0(k,:),X0(k+1,:),mu);
 end
 %% plot halo orbits
@@ -57,7 +57,7 @@ if plotFlag
     % rotates about lagrange point from y-z projection
 end
 %% find monodromy matrix
-for j=1:12
+for j=1:1%12
     ic = [X0(j,1:6), reshape(eye(6),6^2,1)'];
     tspan = linspace(0,2*t_half(1),100);
     [T,X] = ode45(@EOM_3body_var, tspan, ic, opts2, p);
@@ -73,7 +73,7 @@ for j=1:12
     
     %% find stable manifold
     ic_t = X(:,1:6);
-    [state_tS,C_man] = findManifold(ic_t,p,Y_s',eigD(2));
+    [state_tS,C_man,tMan] = findManifold(ic_t,p,Y_s',eigD(2));
     %C_man same energy for invariant manifold
     if plotFlag
         figure;
@@ -91,7 +91,7 @@ for j=1:12
     %% find unstable manifold
     if unstableFlag
         ic_t = X(:,1:6);
-        [state_tU,C_man] = findManifold(ic_t,p,Y_u',eigD(1));
+        [state_tU,C_man,tMan] = findManifold(ic_t,p,Y_u',eigD(1));
         %C_man same energy for invariant manifold
         if plotFlag
             figure;
@@ -111,14 +111,26 @@ for j=1:12
     end
     %% closest to Earth
     diffSmall = 1e8;
+    idx = [0 0];
     for i=1:size(state_tS,3)
         xM = state_tS(:,1,i); yM = state_tS(:,2,i); zM = state_tS(:,3,i);
         for k=1:length(xM)
             diff = norm([1-xM(k);yM(k);zM(k)]);
             if diff < diffSmall
                 diffSmall = diff;
+                idx = [i,k];
             end
         end
     end
-    minDist = diffSmall*au
+    minDist = diffSmall*au;
+    % closest manifold point to bring sc to halo orbit in normalized cr3bp
+    % coordinates
+    % state_tS dimensions = [time step, state pos, ic #]
+    tti_state = state_tS(idx(2),:,idx(1)); % TTI ; X1 - is this correct?
+    hoi_state = ic_t(idx(1),:); % HOI - corresponds to pt above; X0 (correct)
+    hoi0_state = state_tS(1,:,idx(1));
+    tf = tMan(idx(2),idx(1));
+    % the velocities in hoi_state would be subscript h
+    % the velocities in the corresponding pt on the manifold would be 0
+    HOI_diffCorrector(tti_state,hoi_state,hoi0_state,mu,tf)
 end

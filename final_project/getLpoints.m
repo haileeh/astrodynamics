@@ -11,6 +11,6 @@ yl = 0; zl = 0;
 dx_l = subs(dx,   y, yl);
 dx_l = subs(dx_l, z, zl);
 
-L1 = double( vpasolve( dx_l == 0,  0) );
-L2 = double( vpasolve( dx_l == 0,  1) );
-L3 = double( vpasolve( dx_l == 0, -1) );
+L1 = double( vpasolve( dx_l == 0,  0) ); % 0 is x0, value to start search at
+L2 = double( vpasolve( dx_l == 0,  1) ); % 1 is x0, value to start search at
+L3 = double( vpasolve( dx_l == 0, -1) ); % -1 is x0, value to start search at
