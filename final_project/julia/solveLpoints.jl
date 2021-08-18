@@ -1,10 +1,15 @@
+## solveLpoints
+# Provided with a value mu, the collinear lagrange points are determined
+# L1, L2, L3
+using Pkg
+Pkg.add("SymPy")
 using SymPy
 const S = sympy.S
 function solveLpoints(mu)
 
-	x = Sym("x");
-	y = Sym("y");
-	z = Sym("z");
+	x = symbols("x");
+	y = symbols("y");
+	z = symbols("z");
 
 	R1 = sqrt((x+mu)^2 + y^2 + z^2);
 	R2 = sqrt((x+mu-1.0)^2 + y^2 + z^2);
