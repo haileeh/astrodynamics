@@ -6,6 +6,7 @@ include("differentialControl_zFixed.jl")
 include("continuation.jl")
 include("plotHaloOrbits.jl")
 include("monodromyMatrix.jl")
+include("findManifold.jl")
 
 struct Pz
     mu::Float64
@@ -64,5 +65,9 @@ end
 ## find manifold
 p = Pz(mu);
 for j in 1:5
-    monodromyMatrix(X0[j,:],t_half[j],p);
+    (uD, sD, Y_u, Y_s, X) = monodromyMatrix(X0[j,:],t_half[j],p);
+
+    # find stable manifold
+    ic_t = X[1:6,:];
+    (state_t,C,tMan)=findManifold(ic_t,p,Y_s,sD); # is the second one corresponding to the stable value?
 end

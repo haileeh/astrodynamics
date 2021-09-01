@@ -36,6 +36,7 @@ for k=1:5
     [X0(2+k,:),t_half(2+k)] = continuation(X0(k,:),X0(k+1,:),mu);
 end
 %% plot halo orbits
+opts2 = odeset;
 if plotFlag
     figure;
     plot3(1-mu,0,0,'bo','LineWidth',2); % Earth
@@ -46,7 +47,7 @@ if plotFlag
         ic = X0(j,1:6);
         p.mu = mu;
         tspan = linspace(0,2*t_half(j),100);
-        opts2 = odeset;
+        
         [T,X] = ode45(@EOM_3body, tspan, ic, opts2, p);
         
         plot3(X(:,1),X(:,2),X(:,3),'k');
@@ -59,7 +60,7 @@ end
 %% find monodromy matrix
 for j=1:1%12
     ic = [X0(j,1:6), reshape(eye(6),6^2,1)'];
-    tspan = linspace(0,2*t_half(1),100);
+    tspan = linspace(0,2*t_half(j),100);
     [T,X] = ode45(@EOM_3body_var, tspan, ic, opts2, p);
     for i=1:length(T)
         Phi(:,:,i) = reshape(X(i,7:end), 6, 6);
