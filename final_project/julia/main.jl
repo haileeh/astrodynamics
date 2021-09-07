@@ -14,7 +14,7 @@ end
 
 
 plotFlag = 1;
-unstableFlag = 0;
+unstableFlag = 1;
 # Define constants
 mEarth = 5.9722e24; #[kg]
 mSun = 1.989e30; #[kg]
@@ -59,7 +59,7 @@ end
 
 ## plot halo orbits
 if plotFlag==1
-    plotHaloOrbits(X0, mu, L1, L2, t_half);
+    plotHaloOrbits(X0, mu, L1, L2, t_half)
 end
 
 ## find manifold
@@ -69,5 +69,15 @@ for j in 1:5
 
     # find stable manifold
     ic_t = X[1:6,:];
-    (state_t,C,tMan)=findManifold(ic_t,p,Y_s,sD); # is the second one corresponding to the stable value?
+    (state_tS,CS,tManS)=findManifold(ic_t,p,Y_s,sD);
+    #C_man same energy for invariant manifold
+    if plotFlag==1 #&& j==3 # just do this once for now
+        plotStableManifolds(X, state_tS, mu, L1, L2,j);
+    end
+    if unstableFlag==1
+    	(state_tU,CU,tManU)=findManifold(ic_t,p,Y_u,uD);
+    	if plotFlag==1
+    		plotUnstableManifolds(X, state_tU, mu, L1, L2,j+5); #remove hardcoding
+    	end
+    end
 end

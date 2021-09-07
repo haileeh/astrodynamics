@@ -6,14 +6,14 @@ function findManifold(ic_t,p,Y_s,eigD)
 
     if Y_s[1] > 0.0
         #neg eps
-        eps = -0.0001;
+        eps = -0.00001;#-0.0001;
     else
         # pos eps
-        eps = 0.0001;
+        eps = 0.00001;#0.0001;
     end
 
     tf = 2.5;
-    #tf = 10;
+    tf = 3.1; #3 was good
     if eigD < 1.0
         # use reverse direction
         tspan = (tf,0.0);#linspace(tf,0,1000);
@@ -29,7 +29,7 @@ function findManifold(ic_t,p,Y_s,eigD)
        ic = ic_t[:,i] + eps*Y_s;
        #[tMan(:,i),state_t(:,:,i)] = ode45(@EOM_3body, tspan, ic, opts, p);
        prob = ODEProblem(EOM_3body,ic,tspan,p);
-       sol = solve(prob, Tsit5(), reltol=1e-12,abstol=1e-12,adaptive=false,dt=dtFixed);
+       sol = solve(prob, Tsit5(), reltol=1e-17,abstol=1e-17,adaptive=false,dt=dtFixed);
        tMan[:,i] = sol.t;
        state_t[:,:,i] = sol';
     end

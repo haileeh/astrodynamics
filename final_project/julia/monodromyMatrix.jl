@@ -25,7 +25,7 @@ function monodromyMatrix(X0,t_half,p)
     Phif = Phi[:,:,length(T)];
     
     V = eigvecs(Phif); # columns associated with eigvals
-    D = eigvals(Phif);
+    D = eigvals(Phif); # [stable (<1), complex~1, complex~1, ~1, ~1, unstable (>1)]
     # unstable vs stable depends on eigenvalue
     # D element > 1 is unstable, D element < 1 is stable
     uIdx = 0;
@@ -47,5 +47,7 @@ function monodromyMatrix(X0,t_half,p)
     Y_u = real(V[:,uIdx]); #unstable
     Y_s = real(V[:,sIdx]); #stable
 
+    #println(D)
+    #println(abs(D[3]))
     return uD,sD, Y_u, Y_s, X
 end
